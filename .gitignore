@@ -34,3 +34,9 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# rdio
+rdio_consumer_credentials.py
+
+# emacs
+*~
