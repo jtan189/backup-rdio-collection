@@ -45,41 +45,38 @@ except NameError:
 rdio = Rdio(RDIO_CREDENTIALS)
 
 try:
-  # authenticate against the Rdio service
-  url = rdio.begin_authentication('oob')
-  print('Go to: ' + url)
-  verifier = input('Then enter the code: ').strip()
-  rdio.complete_authentication(verifier)
+    # TODO: automate this?
+    # authenticate against the Rdio service
+    url = rdio.begin_authentication('oob')
+    print('Go to: ' + url)
+    verifier = input('Then enter the code: ').strip()
+    rdio.complete_authentication(verifier)
 
-  # TODO: get collection data
-  # probably will use the following API calls to build collection:
-  #   getAlbumsInCollection
-  #   getAlbumsForArtistInCollection
-  #   getArtistsInCollection
-  #   getTracksForAlbumInCollection
-  #   getTracksForArtistInCollection
-  #   getTracksInCollection
+    # TODO: get collection data
+    # probably will use the following API calls to build collection:
+    #   getAlbumsInCollection
+    #   getAlbumsForArtistInCollection
+    #   getArtistsInCollection
+    #   getTracksForAlbumInCollection
+    #   getTracksForArtistInCollection
+    #   getTracksInCollection
   
-  # get all tracks
-  tracks = rdio.call('getTracksInCollection')
+    # get all tracks
+    tracks = rdio.call('getTracksInCollection')
   
-  # save json as file
-  with open('tracks.txt', 'w') as outfile:
-      json.dump(tracks, outfile, indent=4)
+    # save json as file
+    with open('tracks.txt', 'w') as outfile:
+        json.dump(tracks, outfile, indent=4)
 
-  # TODO: convert to tracks JSON to YAML?
+    # TODO: convert tracks JSON to YAML?
 
-  # <test>
-  # find out what playlists you created
-  # myPlaylists = rdio.call('getPlaylists')['result']['owned']
-
-  # # list them
-  # for playlist in myPlaylists:
-  #   print('%(shortUrl)s\t%(name)s' % playlist)
-  # </test>
+    # # <test>
+    # # find out what playlists you created
+    # myPlaylists = rdio.call('getPlaylists')['result']['owned']
+    # # list them
+    # for playlist in myPlaylists:
+    #   print('%(shortUrl)s\t%(name)s' % playlist)
+    # # </test>
 except HTTPError as e:
-  # if we have a protocol error, print it
-  print(e.read())
-
-
-
+    # if we have a protocol error, print it
+    print(e.read())
