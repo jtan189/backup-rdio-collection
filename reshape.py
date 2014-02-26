@@ -26,6 +26,8 @@ from __future__ import unicode_literals
 import sys,os.path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import json
+
 from rdio import Rdio
 from rdio_consumer_credentials import RDIO_CREDENTIALS
 try:
@@ -57,15 +59,27 @@ try:
   #   getTracksForAlbumInCollection
   #   getTracksForArtistInCollection
   #   getTracksInCollection
+  
+  # get all tracks
+  tracks = rdio.call('getTracksInCollection')
+  
+  # save json as file
+  with open('tracks.txt', 'w') as outfile:
+      json.dump(tracks, outfile, indent=4)
+
+  # TODO: convert to tracks JSON to YAML?
 
   # <test>
   # find out what playlists you created
-  myPlaylists = rdio.call('getPlaylists')['result']['owned']
+  # myPlaylists = rdio.call('getPlaylists')['result']['owned']
 
-  # list them
-  for playlist in myPlaylists:
-    print('%(shortUrl)s\t%(name)s' % playlist)
+  # # list them
+  # for playlist in myPlaylists:
+  #   print('%(shortUrl)s\t%(name)s' % playlist)
+  # </test>
 except HTTPError as e:
   # if we have a protocol error, print it
   print(e.read())
-  # </test>
+
+
+
