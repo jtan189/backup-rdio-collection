@@ -45,7 +45,7 @@ except NameError:
 def update_collection(rdio):
 
     # get all tracks
-    tracks = rdio.call('getTracksInCollection')['result']
+    tracks = rdio.call('getTracksInCollection', {'sort': 'dateAdded'})['result']
 
     # save json as file
     tracks_path = os.path.join(GIT_REPO_PATH, 'tracks.json')
