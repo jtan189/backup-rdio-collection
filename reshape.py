@@ -26,10 +26,11 @@ from __future__ import unicode_literals
 import sys,os.path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import json, yaml
+import json
+import sh
 
 from rdio import Rdio
-from rdio_consumer_credentials import RDIO_CREDENTIALS
+from rdio_consumer_credentials import RDIO_CREDENTIALS, RDIO_TOKEN, GIT_REPO_PATH
 try:
     from urllib.error import HTTPError
 except ImportError:
@@ -41,43 +42,40 @@ try:
 except NameError:
     pass
 
-# create an instance of the Rdio object with our consumer credentials
-rdio = Rdio(RDIO_CREDENTIALS)
+def update_collection(rdio):
 
-try:
-    # TODO: automate this?
-    # authenticate against the Rdio service
-    url = rdio.begin_authentication('oob')
-    print('Go to: ' + url)
-    verifier = input('Then enter the code: ').strip()
-    rdio.complete_authentication(verifier)
-
-    # TODO: get collection data
-    # probably will use the following API calls to build collection:
-    #   getAlbumsInCollection
-    #   getAlbumsForArtistInCollection
-    #   getArtistsInCollection
-    #   getTracksForAlbumInCollection
-    #   getTracksForArtistInCollection
-    #   getTracksInCollection
-  
     # get all tracks
     tracks = rdio.call('getTracksInCollection')['result']
-  
+
     # save json as file
-    with open('tracks.json', 'w') as json_file:
+    tracks_path = os.path.join(GIT_REPO_PATH, 'tracks.json')
+    with open(tracks_path, 'w') as json_file:
         json.dump(tracks, json_file, indent=4)
 
-    with open('tracks.yaml', 'w') as yaml_file:
-        yaml.dump(tracks, yaml_file, default_flow_style=False)
+    git = sh.git.bake(_cwd=GIT_REPO_PATH)
+    print git.add(tracks_path)
+    print git.commit(m='Updating rdio collection.')
+    print git.push()
 
-    # # <test>
-    # # find out what playlists you created
-    # myPlaylists = rdio.call('getPlaylists')['result']['owned']
-    # # list them
-    # for playlist in myPlaylists:
-    #   print('%(shortUrl)s\t%(name)s' % playlist)
-    # # </test>
-except HTTPError as e:
-    # if we have a protocol error, print it
-    print(e.read())
+if __name__ == "__main__":
+
+    try:
+        if '' in RDIO_TOKEN:
+
+            # create an instance of the Rdio object with our consumer credentials
+            rdio = Rdio(RDIO_CREDENTIALS)
+
+            # authenticate against the Rdio service
+            url = rdio.begin_authentication('oob')
+            print('Go to: ' + url)
+            verifier = input('Then enter the code: ').strip()
+            rdio.complete_authentication(verifier)
+
+        else:
+            rdio = Rdio(RDIO_CREDENTIALS, RDIO_TOKEN)
+
+    except HTTPError as e:
+        # if we have a protocol error, print it
+        print(e.read())
+    
+    update_collection(rdio)

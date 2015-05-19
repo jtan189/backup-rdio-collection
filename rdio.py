@@ -78,6 +78,7 @@ class Rdio:
     parsed = dict(parse_qsl(response))
     # save the token
     self.token = (parsed['oauth_token'], parsed['oauth_token_secret'])
+    print self.token # prints (AUTH_TOKEN, AUTH_TOKEN_SECRET)
 
   def call(self, method, params=dict()):
     # make a copy of the dict
